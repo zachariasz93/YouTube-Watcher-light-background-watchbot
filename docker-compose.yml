@@ -1,0 +1,43 @@
+services:
+  youtubebot:
+    build: .
+    container_name: youtubebot-app
+    environment:
+      - DISPLAY=:99
+    volumes:
+      # Mount the directory with images to save downloaded thumbnails
+      - ./Chrome/images:/app/Chrome/images
+      - ./Firefox/images:/app/Firefox/images
+      # Optionally mount logs
+      - ./logs:/app/logs
+    ports:
+      # Port for VNC if we want to view the GUI
+      - "5900:5900"
+    # Restart policy
+    restart: unless-stopped
+    # Optional resource constraints
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+    # Running in interactive mode
+    stdin_open: true
+    tty: true
+    
+  # Optional VNC service for viewing the GUI
+  vnc-viewer:
+    image: dorowu/ubuntu-desktop-lxde-vnc:latest
+    container_name: youtubebot-vnc
+    ports:
+      - "6080:80"
+      - "5901:5900"
+    environment:
+      - VNC_PASSWORD=vnc123
+    profiles:
+      - vnc
+    restart: unless-stopped
+
+volumes:
+  logs:
+    driver: local

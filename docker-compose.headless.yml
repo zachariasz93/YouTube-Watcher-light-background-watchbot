@@ -1,0 +1,26 @@
+# Docker Compose - variants for different usage methods
+
+# Variant 1: Basic (GUI)
+# docker-compose up
+
+# Variant 2: Headless
+# docker-compose -f docker-compose.headless.yml up
+
+services:
+  youtubebot-headless:
+    build: .
+    container_name: youtubebot-headless
+    environment:
+      - DISPLAY=:99
+    volumes:
+      - ./Chrome/images:/app/Chrome/images
+      - ./logs:/app/logs
+    command: ["/app/start.sh", "headless", "--url", "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "--duration", "00:02:00", "--loops", "3"]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.3'
+    stdin_open: true
+    tty: true
